@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Get a Pokémon</title>
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+		<style>
+			#pokemon-image-box {
+				width: 200px;
+				height: 125px;
+				background-color: lightgreen;
+				border-radius: 10px;
+				margin: 0px auto 10px auto;
+			}
+
+			#pokemon-image {
+				height: inherit;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			#pokemon-name-box {
+				width: 300px;
+				height: 60px;
+				background-color: lightgreen;
+				border-radius: 10px;
+				margin: 10px auto;
+			}
+
+			#pokemon-name {
+				font-size: 40px;
+				font-family: "Roboto", sans-serif;
+				text-align: center;
+				line-height: 60px;
+			}
+
+			#pokedex-number-entry {
+				width: 250px;
+				background-color: lightgreen;
+				border-radius: 10px;
+				padding: 10px;
+				margin: auto;
+			}
+
+			#pokedex-number-entry-info {
+				font-family: "Roboto", sans-serif;
+				margin-bottom: 5px;
+				text-align: center;
+			}
+
+			#pokedex-number-entry-form input {
+				display: block;
+				width: 50px;
+				margin: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="pokemon-image-box">
+			<img id="pokemon-image">
+		</div>
+
+		<div id="pokemon-name-box">
+			<div id="pokemon-name"></div>
+		</div>
+
+		<div id="pokedex-number-entry">
+			<div id="pokedex-number-entry-info">Enter a PokéDex number here:</div>
+			<form id="pokedex-number-entry-form">
+				<input type="text">
+			</form>
+		</div>
+
+    	<script type="text/javascript">
+			var pokedexNumberEl = document.getElementById("pokedex-number-entry-form");
+
+			pokedexNumberEl.addEventListener("submit", function(e) {
+				e.preventDefault();
+
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", "http://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
+				xhr.send();
+				xhr.addEventListener("readystatechange", processRequest, false);
+			});
+
+			function processRequest(e) {
+				if (this.readyState === 4 && this.status === 200) {
+					var response = JSON.parse(this.responseText);
+					var pokemonName =
+						response.name.substring(0, 1).toUpperCase() +
+						response.name.substring(1);
+
+					console.log(response);
+					document.getElementById("pokemon-name").textContent = pokemonName;
+					document.getElementById("pokemon-image").setAttribute("src", response.sprites.front_default);
+				}
+			}
+		</script>
+	</body>
+</html>
