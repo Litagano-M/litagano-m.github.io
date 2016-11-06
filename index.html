@@ -92,8 +92,6 @@
 			// Get the PokéDex number entry form and listen for when it is submitted
 			$("#pokedex-number-entry-form").on("submit", function(e) {
 				e.preventDefault();
-				$("#pokemon-image").fadeOut();
-				$("#pokemon-name").fadeOut();
 
 				if (!isValidNumber($("#pokedex-number-entry-form input").val())) {
 					// Get the div that will contain the error message
@@ -113,8 +111,13 @@
 						errorContainer.slideUp();
 					}, 4000));
 				} else {
+					// Fade the image and text out
+					$("#pokemon-image").fadeOut();
+					$("#pokemon-name").fadeOut();
+
 					// If the input provided in the form is a number, then create a new HTTP request
 					var xhr = new XMLHttpRequest();
+
 					// Set the HTTP request to GET, and pass it the number provided in the input in the form
 					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + $("#pokedex-number-entry-form input").val(), true);
 					xhr.send();
