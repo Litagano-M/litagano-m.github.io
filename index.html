@@ -16,7 +16,7 @@
 
 			#pokemon-image {
 				height: inherit;
-				display: block;
+				display: none;
 				margin-left: auto;
 				margin-right: auto;
 			}
@@ -30,6 +30,7 @@
 			}
 
 			#pokemon-name {
+				display: none;
 				font-family: "Roboto", sans-serif;
 				font-size: 40px;
 				text-align: center;
@@ -91,13 +92,15 @@
 			// Get the PokéDex number entry form and listen for when it is submitted
 			$("#pokedex-number-entry-form").on("submit", function(e) {
 				e.preventDefault();
+				$("#pokemon-image").fadeOut();
+				$("#pokemon-name").fadeOut();
 
 				if (!isValidNumber($("#pokedex-number-entry-form input").val())) {
 					// Get the div that will contain the error message
 					var errorContainer = $("#pokedex-number-entry-error");
 
 					// Display the error message in the div and make it appear
-					errorContainer.text("Please enter a number.").slideDown();
+					errorContainer.text("Please enter a valid number.").slideDown();
 
 					// Clear all currently active timeouts
 					for (var i = currentTimeouts.length - 1; i >= 0; i--) {
@@ -113,7 +116,7 @@
 					// If the input provided in the form is a number, then create a new HTTP request
 					var xhr = new XMLHttpRequest();
 					// Set the HTTP request to GET, and pass it the number provided in the input in the form
-					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
+					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + $("#pokedex-number-entry-form input").val(), true);
 					xhr.send();
 					xhr.addEventListener("readystatechange", processRequest, false);
 				}
@@ -131,8 +134,8 @@
 
 					console.log(response);
 					// Set the image to the one returned by the request and set the name to the constructed string above
-					$("#pokemon-image").attr("src", response.sprites.front_default);
-					$("#pokemon-name").text(pokemonName);
+					$("#pokemon-image").attr("src", response.sprites.front_default).fadeIn().css("display", "block");
+					$("#pokemon-name").text(pokemonName).fadeIn();
 				}
 			}
 
