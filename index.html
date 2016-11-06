@@ -9,15 +9,15 @@
 			#pokemon-image-box {
 				width: 200px;
 				height: 125px;
-				margin: 0px auto 10px auto;
+				margin: 100px auto 10px auto;
 				background-color: lightgreen;
 				border-radius: 10px;
 			}
 
 			#pokemon-image {
 				height: inherit;
-				margin-left: auto;
-				margin-right: auto;
+				margin-left: inherit;
+				margin-right: inherit;
 				display: none;
 				position: absolute;
 			}
@@ -112,44 +112,34 @@
 						errorContainer.slideUp();
 					}, 4000));
 				} else {
-					// Fade the image and text out
+					// Fade the image and text out and slide it to the right
 					$("#pokemon-image")
 						.fadeOut()
-						.animate({left: 80, right: 0}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
+						.animate({left: "+=80", right: 0}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
 						.dequeue();
 					$("#pokemon-name").fadeOut();
 
-					// If the input provided in the form is a number, then create a new HTTP request
-					var xhr = new XMLHttpRequest();
-
-					// Set the HTTP request to GET, and pass it the number provided in the input in the form
-					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + $("#pokedex-number-entry-form input").val(), true);
-					xhr.send();
-					xhr.addEventListener("readystatechange", processRequest, false);
+					// If the input provided in the form is a number, then send an HTTP GET request to the URL with the specified PokéDex number and pass the results through processRequest
+					$.get("https://pokeapi.co/api/v2/pokemon/" + $("#pokedex-number-entry-form input").val(), processRequest);
 				}
 			});
 
-			function processRequest(e) {
-				// If the HTTP request went through and a 200 OK status was returned...
-				if (this.readyState === 4 && this.status === 200) {
-					// ...then take the response, parse it into a JSON object...
-					var response = JSON.parse(this.responseText);
-					/// ...then take the name field, take the first letter of the name, capitalize it, then combine it with the rest of the name
-					var pokemonName =
-						response.name.substring(0, 1).toUpperCase() +
-						response.name.substring(1);
+			function processRequest(response) {
+				/// Take the name field from the data recieved, take the first letter of the name, capitalize it, then combine it with the rest of the name
+				var pokemonName =
+					response.name.substring(0, 1).toUpperCase() +
+					response.name.substring(1);
 
-					console.log(response);
-					// Set the image to the one returned by the request, set the name to the constructed string above, and fade both of them in
-					$("#pokemon-image")
-						.attr("src", response.sprites.front_default)
-						.css({"left": "0px", "right": "80px"})
-						.fadeIn()
-						.animate({left: 0, right: 0})
-						.dequeue()
-						.css("display", "block");
-					$("#pokemon-name").text(pokemonName).fadeIn();
-				}
+				console.log(response);
+				// Set the image to the one returned by the request, set the name to the constructed string above, and fade both of them in
+				$("#pokemon-image")
+					.attr("src", response.sprites.front_default)
+					.css({left: 0, right: "+=80"})
+					.fadeIn()
+					.animate({left: 0, right: 0})
+					.dequeue()
+					.css("display", "block");
+				$("#pokemon-name").text(pokemonName).fadeIn();
 			}
 
 			// This is the function being used to check whether the value in the input box is a valid number
