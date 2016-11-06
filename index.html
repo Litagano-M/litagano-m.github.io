@@ -16,9 +16,10 @@
 
 			#pokemon-image {
 				height: inherit;
-				display: none;
 				margin-left: auto;
 				margin-right: auto;
+				display: none;
+				position: absolute;
 			}
 
 			#pokemon-name-box {
@@ -112,7 +113,10 @@
 					}, 4000));
 				} else {
 					// Fade the image and text out
-					$("#pokemon-image").fadeOut();
+					$("#pokemon-image")
+						.fadeOut()
+						.animate({left: 80, right: 0}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
+						.dequeue();
 					$("#pokemon-name").fadeOut();
 
 					// If the input provided in the form is a number, then create a new HTTP request
@@ -136,8 +140,14 @@
 						response.name.substring(1);
 
 					console.log(response);
-					// Set the image to the one returned by the request and set the name to the constructed string above
-					$("#pokemon-image").attr("src", response.sprites.front_default).fadeIn().css("display", "block");
+					// Set the image to the one returned by the request, set the name to the constructed string above, and fade both of them in
+					$("#pokemon-image")
+						.attr("src", response.sprites.front_default)
+						.css({"left": "0px", "right": "80px"})
+						.fadeIn()
+						.animate({left: 0, right: 0})
+						.dequeue()
+						.css("display", "block");
 					$("#pokemon-name").text(pokemonName).fadeIn();
 				}
 			}
