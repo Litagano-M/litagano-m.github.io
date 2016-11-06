@@ -9,9 +9,9 @@
 			#pokemon-image-box {
 				width: 200px;
 				height: 125px;
+				margin: 0px auto 10px auto;
 				background-color: lightgreen;
 				border-radius: 10px;
-				margin: 0px auto 10px auto;
 			}
 
 			#pokemon-image {
@@ -24,36 +24,45 @@
 			#pokemon-name-box {
 				width: 300px;
 				height: 60px;
+				margin: 10px auto;
 				background-color: lightgreen;
 				border-radius: 10px;
-				margin: 10px auto;
 			}
 
 			#pokemon-name {
-				font-size: 40px;
 				font-family: "Roboto", sans-serif;
+				font-size: 40px;
 				text-align: center;
 				line-height: 60px;
 			}
 
 			#pokedex-number-entry {
 				width: 250px;
-				background-color: lightgreen;
-				border-radius: 10px;
 				padding: 10px;
 				margin: auto;
+				background-color: lightgreen;
+				border-radius: 10px;
 			}
 
 			#pokedex-number-entry-info {
-				font-family: "Roboto", sans-serif;
 				margin-bottom: 5px;
+				font-family: "Roboto", sans-serif;
 				text-align: center;
 			}
 
 			#pokedex-number-entry-form input {
-				display: block;
 				width: 50px;
 				margin: auto;
+				display: block;
+			}
+
+			#pokedex-number-entry-error {
+				margin-top: 5px;
+				display: none;
+				font-family: "Roboto", sans-serif;
+				font-size: 10px;
+				text-align: center;
+				color: red;
 			}
 		</style>
 	</head>
@@ -71,16 +80,31 @@
 			<form id="pokedex-number-entry-form">
 				<input type="text">
 			</form>
+			<div id="pokedex-number-entry-error"></div>
 		</div>
 
     	<script type="text/javascript">
-			var pokedexNumberEl = document.getElementById("pokedex-number-entry-form");
+			var pokedexNumberEntryEl = document.getElementById("pokedex-number-entry-form");
+			var currentTimeouts = [];
 
-			pokedexNumberEl.addEventListener("submit", function(e) {
+			pokedexNumberEntryEl.addEventListener("submit", function(e) {
 				e.preventDefault();
 
-				if (isNaN(parseFloat(this.elements[0].value))) {
-					console.log("Please enter a number.");
+				if (!isValidNumber(this.elements[0].value)) {
+					var errorContainer = document.getElementById("pokedex-number-entry-error");
+
+					errorContainer.textContent = "Please enter a number.";
+					errorContainer.style.display = "block";
+
+					for (var i = currentTimeouts.length - 1; i >= 0; i--) {
+						window.clearTimeout(currentTimeouts[i + 1]);
+					}
+
+					currentTimeouts.push(window.setTimeout(function() {
+						errorContainer.style.display = "none";
+					}, 4000));
+
+					console.log(currentTimeouts);
 				} else {
 					var xhr = new XMLHttpRequest();
 					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
@@ -99,6 +123,22 @@
 					console.log(response);
 					document.getElementById("pokemon-name").textContent = pokemonName;
 					document.getElementById("pokemon-image").setAttribute("src", response.sprites.front_default);
+				}
+			}
+
+			function isValidNumber(input) {
+				if (typeof input === "number") {
+					return true;
+				} else if (typeof input === "string") {
+					for (var i = 0; i < input.length; i++) {
+						if (isNaN(parseInt(input.charAt(i)))) {
+							return false;
+						}
+					}
+
+					return true;
+				} else {
+					return false;
 				}
 			}
 		</script>
