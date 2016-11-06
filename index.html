@@ -79,10 +79,14 @@
 			pokedexNumberEl.addEventListener("submit", function(e) {
 				e.preventDefault();
 
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
-				xhr.send();
-				xhr.addEventListener("readystatechange", processRequest, false);
+				if (isNaN(parseFloat(this.elements[0].value))) {
+					console.log("Please enter a number.");
+				} else {
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
+					xhr.send();
+					xhr.addEventListener("readystatechange", processRequest, false);
+				}
 			});
 
 			function processRequest(e) {
