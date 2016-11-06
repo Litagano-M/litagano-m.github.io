@@ -84,29 +84,36 @@
 		</div>
 
     	<script type="text/javascript">
+			// Get the PokéDex number entry form
 			var pokedexNumberEntryEl = document.getElementById("pokedex-number-entry-form");
+			// An array to hold all current timeouts (used for resetting active timeouts if a new one is created before the previous one is done)
 			var currentTimeouts = [];
 
 			pokedexNumberEntryEl.addEventListener("submit", function(e) {
 				e.preventDefault();
 
 				if (!isValidNumber(this.elements[0].value)) {
+					// Get the div that will contain the error message
 					var errorContainer = document.getElementById("pokedex-number-entry-error");
 
+					// Display the error message in the div and make it appear
 					errorContainer.textContent = "Please enter a number.";
 					errorContainer.style.display = "block";
 
+					// Clear all currently active timeouts
 					for (var i = currentTimeouts.length - 1; i >= 0; i--) {
 						window.clearTimeout(currentTimeouts[i + 1]);
 					}
 
+					// Create a new timeout and push its ID into the array of currently running timeouts
 					currentTimeouts.push(window.setTimeout(function() {
+						// Once the timeout is done, set the error message's display to none
 						errorContainer.style.display = "none";
 					}, 4000));
-
-					console.log(currentTimeouts);
 				} else {
+					// If the input provided in the form is a number, then create a new HTTP request
 					var xhr = new XMLHttpRequest();
+					// Set the HTTP request to GET, and pass it the number provided in the input in the form
 					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
 					xhr.send();
 					xhr.addEventListener("readystatechange", processRequest, false);
@@ -114,30 +121,40 @@
 			});
 
 			function processRequest(e) {
+				// If the HTTP request went through and a 200 OK status was returned...
 				if (this.readyState === 4 && this.status === 200) {
+					// ...then take the response, parse it into a JSON object...
 					var response = JSON.parse(this.responseText);
+					/// ...then take the name field, take the first letter of the name, capitalize it, then combine it with the rest of the name
 					var pokemonName =
 						response.name.substring(0, 1).toUpperCase() +
 						response.name.substring(1);
 
 					console.log(response);
-					document.getElementById("pokemon-name").textContent = pokemonName;
+					// Set the image to the one returned by the request and set the name to the constructed string above
 					document.getElementById("pokemon-image").setAttribute("src", response.sprites.front_default);
+					document.getElementById("pokemon-name").textContent = pokemonName;
 				}
 			}
 
+			// This is the function being used to check whether the value in the input box is a valid number
 			function isValidNumber(input) {
 				if (typeof input === "number") {
+					// If the input is a number, then return true. Not sure when this will be applicable, as the input grabbed from the text box will always be a string, but it doesn't hurt to be sure, right?
 					return true;
 				} else if (typeof input === "string") {
+					// If the input is a string (which it most likely will be), then...
 					for (var i = 0; i < input.length; i++) {
+						// ...for every character in the string, check if it is a not a number. If not...
 						if (isNaN(parseInt(input.charAt(i)))) {
+							// ...return false.
 							return false;
 						}
 					}
-
+					// If all of the characters in the string are numbers, then return true
 					return true;
 				} else {
+					// If the input is neither a number nor a string, then return false.
 					return false;
 				}
 			}
