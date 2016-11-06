@@ -16,9 +16,10 @@
 
 			#pokemon-image {
 				height: inherit;
-				display: block;
 				margin-left: auto;
 				margin-right: auto;
+				display: none;
+				position: absolute;
 			}
 
 			#pokemon-name-box {
@@ -30,6 +31,7 @@
 			}
 
 			#pokemon-name {
+				display: none;
 				font-family: "Roboto", sans-serif;
 				font-size: 40px;
 				text-align: center;
@@ -97,7 +99,7 @@
 					var errorContainer = $("#pokedex-number-entry-error");
 
 					// Display the error message in the div and make it appear
-					errorContainer.text("Please enter a number.").slideDown();
+					errorContainer.text("Please enter a valid number.").slideDown();
 
 					// Clear all currently active timeouts
 					for (var i = currentTimeouts.length - 1; i >= 0; i--) {
@@ -110,10 +112,18 @@
 						errorContainer.slideUp();
 					}, 4000));
 				} else {
+					// Fade the image and text out
+					$("#pokemon-image")
+						.fadeOut()
+						.animate({left: 80, right: 0}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
+						.dequeue();
+					$("#pokemon-name").fadeOut();
+
 					// If the input provided in the form is a number, then create a new HTTP request
 					var xhr = new XMLHttpRequest();
+
 					// Set the HTTP request to GET, and pass it the number provided in the input in the form
-					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + this.elements[0].value, true);
+					xhr.open("GET", "https://pokeapi.co/api/v2/pokemon/" + $("#pokedex-number-entry-form input").val(), true);
 					xhr.send();
 					xhr.addEventListener("readystatechange", processRequest, false);
 				}
@@ -130,9 +140,15 @@
 						response.name.substring(1);
 
 					console.log(response);
-					// Set the image to the one returned by the request and set the name to the constructed string above
-					$("#pokemon-image").attr("src", response.sprites.front_default);
-					$("#pokemon-name").text(pokemonName);
+					// Set the image to the one returned by the request, set the name to the constructed string above, and fade both of them in
+					$("#pokemon-image")
+						.attr("src", response.sprites.front_default)
+						.css({"left": "0px", "right": "80px"})
+						.fadeIn()
+						.animate({left: 0, right: 0})
+						.dequeue()
+						.css("display", "block");
+					$("#pokemon-name").text(pokemonName).fadeIn();
 				}
 			}
 
