@@ -19,7 +19,7 @@
 				margin-left: inherit;
 				margin-right: inherit;
 				display: none;
-				position: absolute;
+				position: relative;
 			}
 
 			#pokemon-name-box {
@@ -115,7 +115,7 @@
 					// Fade the image and text out and slide it to the right
 					$("#pokemon-image")
 						.fadeOut()
-						.animate({left: "+=80", right: 0}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
+						.animate({left: 80}, {complete: function() { $("#pokemon-image").removeAttr("src"); }})
 						.dequeue();
 					$("#pokemon-name").fadeOut();
 
@@ -134,9 +134,9 @@
 				// Set the image to the one returned by the request, set the name to the constructed string above, and fade both of them in
 				$("#pokemon-image")
 					.attr("src", response.sprites.front_default)
-					.css({left: 0, right: "+=80"})
+					.css({left: -80})
 					.fadeIn()
-					.animate({left: 0, right: 0})
+					.animate({left: 0})
 					.dequeue()
 					.css("display", "block");
 				$("#pokemon-name").text(pokemonName).fadeIn();
