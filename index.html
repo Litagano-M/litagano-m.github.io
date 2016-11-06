@@ -83,22 +83,21 @@
 			<div id="pokedex-number-entry-error"></div>
 		</div>
 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     	<script type="text/javascript">
-			// Get the PokéDex number entry form
-			var pokedexNumberEntryEl = document.getElementById("pokedex-number-entry-form");
 			// An array to hold all current timeouts (used for resetting active timeouts if a new one is created before the previous one is done)
 			var currentTimeouts = [];
 
-			pokedexNumberEntryEl.addEventListener("submit", function(e) {
+			// Get the PokéDex number entry form and listen for when it is submitted
+			$("#pokedex-number-entry-form").on("submit", function(e) {
 				e.preventDefault();
 
-				if (!isValidNumber(this.elements[0].value)) {
+				if (!isValidNumber($("#pokedex-number-entry-form input").val())) {
 					// Get the div that will contain the error message
-					var errorContainer = document.getElementById("pokedex-number-entry-error");
+					var errorContainer = $("#pokedex-number-entry-error");
 
 					// Display the error message in the div and make it appear
-					errorContainer.textContent = "Please enter a number.";
-					errorContainer.style.display = "block";
+					errorContainer.text("Please enter a number.").slideDown();
 
 					// Clear all currently active timeouts
 					for (var i = currentTimeouts.length - 1; i >= 0; i--) {
@@ -107,8 +106,8 @@
 
 					// Create a new timeout and push its ID into the array of currently running timeouts
 					currentTimeouts.push(window.setTimeout(function() {
-						// Once the timeout is done, set the error message's display to none
-						errorContainer.style.display = "none";
+						// Once the timeout is done, hide the display
+						errorContainer.slideUp();
 					}, 4000));
 				} else {
 					// If the input provided in the form is a number, then create a new HTTP request
@@ -132,8 +131,8 @@
 
 					console.log(response);
 					// Set the image to the one returned by the request and set the name to the constructed string above
-					document.getElementById("pokemon-image").setAttribute("src", response.sprites.front_default);
-					document.getElementById("pokemon-name").textContent = pokemonName;
+					$("#pokemon-image").attr("src", response.sprites.front_default);
+					$("#pokemon-name").text(pokemonName);
 				}
 			}
 
